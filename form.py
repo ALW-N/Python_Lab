@@ -14,14 +14,21 @@ def validate_name(name):
     pattern = r'^[^\d]+$'
     return re.match(pattern, name)
 
+def validate_expense(expense):
+    try:
+        float(expense)
+        return True
+    except ValueError:
+        return False
 
 def submit_expense():
     name = name_entry.get()
     email = email_entry.get()
     phone = phone_entry.get()
-
+    expense = expense_entry.get()
     category = category_entry.get()
-
+    description = description_entry.get("1.0", tk.END)
+    payment_method = payment_method_var.get()
     gender = gender_var.get()
     year = year_spinbox.get()
 
@@ -34,9 +41,12 @@ def submit_expense():
     if not validate_name(name):
         messagebox.showerror("Error", "Name cannot contain numeric digits")
         return
+    if not validate_expense(expense):
+        messagebox.showerror("Error", "Invalid Expense (should be a float)")
+        return
 
 
-    message = f"Name: {name}\nEmail: {email}\nPhone: {phone}\nCategory: {category}\nGender: {gender}\nYear: {year}"
+    message = f"Name: {name}\nEmail: {email}\nPhone: {phone}\nExpense: {expense}\nCategory: {category}\nDescription: {description}\nPayment Method: {payment_method}\nGender: {gender}\nYear: {year}"
 
     messagebox.showinfo("Expense Details", message)
 
@@ -44,7 +54,13 @@ def submit_expense():
     name_entry.delete(0, tk.END)
     email_entry.delete(0, tk.END)
     phone_entry.delete(0, tk.END)
+    expense_entry.delete(0, tk.END)
     category_entry.delete(0, tk.END)
+    description_entry.delete("1.0", tk.END)
+    payment_method_var.set("Select Payment Method")
+    gender_var.set("Select Gender")
+    year_spinbox.delete(0, tk.END)
+
 
 root = tk.Tk()
 root.title("Expense Tracker")
@@ -53,20 +69,40 @@ frame = tk.Frame(root, padx=50, pady=60)
 frame.pack()
 
 
-name_label = tk.Label(frame, text="First Name:")
+name_label = tk.Label(frame, text="Name:")
 name_label.grid(row=0, column=0, sticky="w", padx=5, pady=5)
 name_entry = tk.Entry(frame)
 name_entry.grid(row=0, column=1, padx=5, pady=5)
 
-expense_label = tk.Label(frame, text="Last Name:")
+expense_label = tk.Label(frame, text="Expense Amount:")
 expense_label.grid(row=1, column=0, sticky="w", padx=5, pady=5)
 expense_entry = tk.Entry(frame)
 expense_entry.grid(row=1, column=1, padx=5, pady=5)
 
-category_label = tk.Label(frame, text="Passoword:")
+category_label = tk.Label(frame, text="Category:")
 category_label.grid(row=2, column=0, sticky="w", padx=5, pady=5)
 category_entry = tk.Entry(frame)
 category_entry.grid(row=2, column=1, padx=5, pady=5)
+
+description_label = tk.Label(frame, text="Description:")
+description_label.grid(row=3, column=0, sticky="w", padx=5, pady=5)
+description_entry = tk.Text(frame, height=4, width=30)
+description_entry.grid(row=3, column=1, padx=5, pady=5)
+
+
+
+payment_method_label = tk.Label(frame, text="Payment Method:")
+payment_method_label.grid(row=4, column=0, sticky="w", padx=5, pady=5)
+
+
+payment_method_var = tk.StringVar()
+payment_method_var.set("Select Payment Method")
+
+payment_method_options = ["Credit Card", "Debit Card", "Cash", "Bank Transfer"]
+payment_method_menu = tk.OptionMenu(frame, payment_method_var, *payment_method_options)
+payment_method_menu.grid(row=4, column=1, padx=5, pady=5, sticky="ew")
+
+
 
 email_label = tk.Label(frame, text="Email:")
 email_label.grid(row=5, column=0, sticky="w", padx=5, pady=5)
